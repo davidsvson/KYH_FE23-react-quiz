@@ -1,8 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Welcome from './components/Welcome'
 import Game from './components/Game';
 import Result from './components/Result';
+
+// 1. skriv om quiz appen
+// 2. modifiera quiz appen till att använda ett api i stället tex // https://opentdb.com/
+// 3. Bygg ut welcome till att användaren får välja kategori av frågor osv 
+
 
 
 enum Screen {
@@ -15,9 +20,19 @@ function App() {
 
   const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.WELCOME);
   const [score, setScore] = useState<number>(0);
- 
+ // [data , setData ]
+
   let content : React.ReactElement | null = null
 
+  
+
+  useEffect( () => {
+  // let recivedData = fetch()
+  // setData(recivedData)
+
+
+
+  }, []);
 
   const restartQuiz = () =>  {
     setScore(0);
