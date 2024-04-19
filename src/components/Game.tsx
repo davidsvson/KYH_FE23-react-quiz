@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 
 interface Question {
-    question : string;   // När är julafton
-    answers: string[];  // ["24 dec", "8 maj" , "3 jul"]
-    correct: number;  // 0
+    type : string;
+    difficulty : string;
+    category : string;
+    question : string;
+    correct_answer : string;
+    incorrect_answers : string[]; 
+}
+
+interface APIresult {
+    response_code : number;
+    results : Question[]
 }
 
 type GameProps = {
@@ -11,16 +20,40 @@ type GameProps = {
     answeredCorrectly : () => void;
 }
 
-
 const Game = (props: GameProps ) => {
-    const questions : Question[] = getQuestions();
-
     const [currentQuestion, setCurrentQuestion] = useState<number>(0); 
     const [selectedAnswer, setSelectedAnswer ] = useState<number | null>(null);
+    const [questions, setQuestions] = useState<Question[] | null>(null);
+
+    useEffect( () => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('https://opentdb.com/api.php?amount=10');
+                const jsonData = (await response.json()) as APIresult ;
+                setQuestions(jsonData.results);
+                console.log(jsonData.results);
+            } catch (error) {
+                console.log("error fetching");
+            };
+        }
+
+        fetchData();
+
+    }, []);
+
+    if (!questions) {
+        return <div>Loading...</div>
+    }
 
     const question : Question = questions[currentQuestion];
 
-    const options = question.answers.map((answer, index) => (
+    //const answers = [...question.incorrect_answers, question.correct_answer];
+    // shuffle:
+    const answers = question.incorrect_answers;
+    const randomIndex = Math.floor( Math.random() * answers.length + 1);
+    answers.splice(randomIndex, 0, question.correct_answer);
+    
+    const options = answers.map((answer, index) => (
         <p key={index}>
             <label>
                 <input type="radio" name="answers" onClick={() => setSelectedAnswer(index)} />
@@ -31,8 +64,11 @@ const Game = (props: GameProps ) => {
 
 
     const handleDecided = () => {
+        if (!selectedAnswer)
+            return;
+
         // kolla om rätt
-        if(selectedAnswer == question.correct) {
+        if(answers[selectedAnswer] === question.correct_answer) {
             props.answeredCorrectly();
         }
 
@@ -43,7 +79,6 @@ const Game = (props: GameProps ) => {
             // gå vidare till result
             props.showResult();
         }
-
     }
 
     return (
@@ -54,32 +89,5 @@ const Game = (props: GameProps ) => {
         </section>
     )
 }
-
-const getQuestions = () : Question[] => {
-    return [
-        {
-            question: "När är Julafton?",
-            answers: ['24 maj', '24 dec', '3 maj' ],
-            correct: 1
-        },
-        {
-            question: "Vad är bäst?",
-            answers: ['javascript', 'typescript', 'css' ],
-            correct: 1
-        },
-        {
-            question: "Vad är bäst?",
-            answers: ['discord', 'zoom', 'teams' ],
-            correct: 0
-        },
-        {
-            question: "Vad är bäst?",
-            answers: ['MacOs', 'windows', 'Linux' ],
-            correct: 2
-        }
-    ];
-}; 
-
-
 
 export default Game;

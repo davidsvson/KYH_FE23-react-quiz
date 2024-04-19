@@ -6,8 +6,6 @@ type WelcomeProps = {
 
 const Welcome = (props : WelcomeProps ) => {
 
-
-
     return (
         <section>
             <h2>Välkommen till denna quiz!</h2>
@@ -15,7 +13,6 @@ const Welcome = (props : WelcomeProps ) => {
             <button onClick={props.nextScreen}>Starta</button>
         </section>
     )
-
 }
 
 export default Welcome;

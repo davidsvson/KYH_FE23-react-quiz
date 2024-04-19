@@ -7,8 +7,7 @@ type ResultProps =  {
 
 
 const Result = (props : ResultProps) => {
-
-
+    
     return (
        <section>
             <h2>Resultat</h2>
